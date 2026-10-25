@@ -45,11 +45,14 @@ Thumbs.db
 *.avi
 *.mov
 *.gif
-output/*.mp4
-output/*.png
+output/*
+!output/.gitkeep
 samples/*.png
 !samples/.gitkeep
 _sil_tmp.png
 
 # Pretrained large model weights (downloaded on demand)
-yolov8n-seg.pt
+weights/
+*.pt
+*.pth
+*.onnx

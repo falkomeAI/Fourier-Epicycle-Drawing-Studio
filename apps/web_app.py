@@ -488,8 +488,12 @@ def load_lightweight_segmentation_model():
         raise ImportError(
             "Lightweight AI segmentation needs Ultralytics. Install it with: pip install ultralytics"
         ) from exc
-    # Lightweight pretrained instance-segmentation model.
-    return YOLO("yolov8n-seg.pt")
+    # Lightweight pretrained instance-segmentation model stored in weights/
+    weights_path = Path(__file__).resolve().parent.parent / "weights" / "yolov8n-seg.pt"
+    if weights_path.is_file():
+        return YOLO(str(weights_path))
+    weights_path.parent.mkdir(parents=True, exist_ok=True)
+    return YOLO(str(weights_path))
 
 
 def lightweight_ai_mask(bgr: np.ndarray, confidence: float = 0.25) -> tuple[np.ndarray, str]:
