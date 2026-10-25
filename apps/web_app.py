@@ -658,6 +658,11 @@ def extract_contour_from_bytes(
     img_bytes: bytes, method: str, n_points: int = 512,
     invert: bool = False, min_contour_len: int = 8, max_contours: int = 500,
     ai_confidence: float = 0.25,
+    phycv_clahe: bool = True,
+    phycv_bilateral: bool = True,
+    phycv_close_gaps: bool = True,
+    phycv_min_area: int = 15,
+    phycv_thin: bool = False,
 ):
     arr = np.frombuffer(img_bytes, dtype=np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_UNCHANGED)
@@ -728,8 +733,15 @@ def extract_contour_from_bytes(
         except Exception:
             mask = _mask_otsu(bgr, invert=True)
     elif method in ("phycv", "pst"):
-        mask = _mask_phycv_pst(bgr)
-        detected_label = "PhyCV (Phase Stretch Transform)"
+        mask = _mask_phycv_pst(
+            bgr,
+            clahe=phycv_clahe,
+            bilateral=phycv_bilateral,
+            close_gaps=phycv_close_gaps,
+            min_area=phycv_min_area,
+            thin=phycv_thin,
+        )
+        detected_label = "PhyCV (Physics Edge + CV Refined)"
     elif method == "canny":
         mask = _mask_canny(bgr)
     elif method == "adaptive":
@@ -1401,6 +1413,11 @@ def main():
         min_contour_len = 8
         max_contours = 120
         ai_confidence = 0.25
+        phycv_clahe = True
+        phycv_bilateral = True
+        phycv_close_gaps = True
+        phycv_min_area = 15
+        phycv_thin = False
 
         if source == "Upload image":
             uploaded = st.file_uploader(
@@ -1464,6 +1481,36 @@ def main():
                 )
 
                 if method not in ("ai", "ai_anime"):
+                    if method in ("phycv", "pst"):
+                        with st.expander("🔬 PhyCV & CV Enhancements", expanded=False):
+                            phycv_clahe = st.checkbox(
+                                "CLAHE local contrast boost",
+                                value=True,
+                                help="Equalizes lighting across shadows & bright areas to capture faint sketch strokes.",
+                            )
+                            phycv_bilateral = st.checkbox(
+                                "Bilateral edge-preserving denoise",
+                                value=True,
+                                help="Smooths flat noise and grain while preserving tack-sharp edge gradients.",
+                            )
+                            phycv_close_gaps = st.checkbox(
+                                "Morphological gap closing",
+                                value=True,
+                                help="Bridges hairline breaks in hand-drawn strokes into continuous closed paths.",
+                            )
+                            phycv_min_area = st.slider(
+                                "Noise speckle filter (min px area)",
+                                min_value=0,
+                                max_value=100,
+                                value=15,
+                                help="Removes isolated dust speckles smaller than this pixel area to prevent Fourier jitter.",
+                            )
+                            phycv_thin = st.checkbox(
+                                "Thin line skeleton (1-pixel strokes)",
+                                value=False,
+                                help="Reduces thick strokes to single-pixel centerlines for clean Fourier line tracing.",
+                            )
+
                     if method != "ai_lite":
                         invert = st.checkbox("Invert foreground/background", value=False)
                     else:
@@ -1511,6 +1558,11 @@ def main():
                         img_bytes, method, n_points=preview_n_points, invert=invert,
                         min_contour_len=min_contour_len, max_contours=max_contours,
                         ai_confidence=ai_confidence,
+                        phycv_clahe=phycv_clahe,
+                        phycv_bilateral=phycv_bilateral,
+                        phycv_close_gaps=phycv_close_gaps,
+                        phycv_min_area=phycv_min_area,
+                        phycv_thin=phycv_thin,
                     )
                 input_img = bgr
             except Exception as exc:

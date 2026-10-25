@@ -354,18 +354,33 @@ def _mask_canny(bgr: np.ndarray, low: int = 50, high: int = 150) -> np.ndarray:
 
 def _mask_phycv_pst(
     bgr: np.ndarray,
-    S: float = 0.3,
-    W: float = 15.0,
+    S: float = 0.35,
+    W: float = 14.0,
     sigma_LPF: float = 0.15,
     thresh_min: float = 0.05,
-    thresh_max: float = 0.9,
+    thresh_max: float = 0.88,
     morph_flag: int = 1,
+    clahe: bool = True,
+    bilateral: bool = True,
+    close_gaps: bool = True,
+    min_area: int = 15,
+    thin: bool = False,
 ) -> np.ndarray:
-    """Physics-inspired edge detection via Phase Stretch Transform (PhyCV, UCLA Jalali Lab).
+    """Physics-inspired edge detection via Phase Stretch Transform (PhyCV, UCLA Jalali Lab)
+    enhanced with classical Computer Vision methods for superior edge quality and contour tracing.
 
-    Emulates propagation of light through engineered dispersive media followed by
-    coherent detection (https://github.com/JalaliLabUCLA/phycv).
-    Captures delicate textures, fine lines, and faint boundaries in drawings and photos.
+    CV Enhancement Pipeline:
+    1. Bilateral Filter: Edge-preserving smoothing that eliminates sensor noise and paper grain
+       without blurring delicate edge boundaries.
+    2. CLAHE (Contrast Limited Adaptive Histogram Equalization): Normalizes local contrast to
+       reveal faint pencil strokes and line details in shadowed or over-exposed regions.
+    3. PhyCV Phase Stretch Transform (PST): UCLA Jalali Lab frequency-domain dispersive phase
+       detection, highly sensitive to structural line shifts.
+    4. Morphological Gap Closing: Bridges 1-3 px hairline breaks in hand-drawn strokes into
+       long, continuous closed paths.
+    5. Connected Component Filtering: Eliminates isolated micro-speckles and noise clusters
+       with pixel area < min_area, dramatically reducing Fourier reconstruction jitter.
+    6. Morphological Thinning / Dilation: Single-pixel skeletonization or watertight boundary dilation.
     """
     try:
         from phycv import PST
@@ -379,6 +394,16 @@ def _mask_phycv_pst(
     else:
         gray = bgr.copy()
 
+    # 1. Edge-preserving bilateral filter: removes sensor/paper noise without blurring edges
+    if bilateral and gray.shape[0] >= 5 and gray.shape[1] >= 5:
+        gray = cv2.bilateralFilter(gray, d=5, sigmaColor=50, sigmaSpace=50)
+
+    # 2. CLAHE: equalize local illumination to reveal faint pencil and line art strokes
+    if clahe and gray.shape[0] >= 8 and gray.shape[1] >= 8:
+        clahe_op = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+        gray = clahe_op.apply(gray)
+
+    # 3. Physics Phase Stretch Transform (PST)
     pst = PST()
     pst.load_img(img_array=gray)
     pst.init_kernel(S=S, W=W)
@@ -392,10 +417,32 @@ def _mask_phycv_pst(
     if np.count_nonzero(edge_mask) == 0 and hasattr(pst, "pst_feature"):
         # Fallback for dark backgrounds where morph() zeroes out pixels below (max_val / 20)
         feat = pst.pst_feature
-        q_max = float(np.quantile(feat[::max(1, feat.shape[0] // 100), ::max(1, feat.shape[1] // 100)], thresh_max))
+        step = max(1, feat.shape[0] // 100)
+        q_max = float(np.quantile(feat[::step, ::step], thresh_max))
         edge_mask = (feat > q_max).astype(np.uint8) * 255
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    edge_mask = cv2.dilate(edge_mask, kernel, iterations=1)
+
+    # 4. Morphological gap closing: bridge hairline breaks into continuous contour loops
+    if close_gaps and np.count_nonzero(edge_mask) > 0:
+        close_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        edge_mask = cv2.morphologyEx(edge_mask, cv2.MORPH_CLOSE, close_kernel)
+
+    # 5. Connected component filtering: eliminate stray speckles and noise clusters
+    if min_area > 0 and np.count_nonzero(edge_mask) > 0:
+        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(edge_mask, connectivity=8)
+        clean_mask = np.zeros_like(edge_mask)
+        for i in range(1, num_labels):
+            if stats[i, cv2.CC_STAT_AREA] >= min_area:
+                clean_mask[labels == i] = 255
+        if np.count_nonzero(clean_mask) > 0:
+            edge_mask = clean_mask
+
+    # 6. Single-pixel skeleton thinning vs watertight boundary dilation
+    if thin and np.count_nonzero(edge_mask) > 0:
+        edge_mask = _skeletonize_opencv(edge_mask)
+    else:
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        edge_mask = cv2.dilate(edge_mask, kernel, iterations=1)
+
     return edge_mask
 
 
