@@ -192,86 +192,94 @@ st.markdown(f"""
         font-weight: 700;
     }}
 
-    /* Form Controls: Clean natural spacing with no overlapping */
+    /* Form Controls: Clean natural spacing with high-contrast text */
     div[data-testid="stSelectbox"] {{
         margin-bottom: 0.5rem !important;
     }}
     div[data-testid="stSelectbox"] > div > div {{
-        background: {BG_1} !important;
-        border: 1px solid {BORDER} !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
         border-radius: 8px !important;
-        color: {TEXT} !important;
+        color: #0f172a !important;
         font-size: 0.88rem !important;
         transition: border 0.15s ease !important;
     }}
+    div[data-testid="stSelectbox"] [data-baseweb="select"] *,
+    div[data-testid="stSelectbox"] span,
+    div[data-testid="stSelectbox"] div,
+    div[data-testid="stSelectbox"] input {{
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }}
+    div[data-testid="stSelectbox"] svg {{
+        fill: #0f172a !important;
+    }}
     div[data-testid="stSelectbox"] > div > div:hover {{
-        border-color: {TEXT} !important;
+        border-color: #0f172a !important;
     }}
 
-    /* Compact File Uploader */
+    /* BaseWeb Dropdown Menus */
+    div[data-baseweb="popover"],
+    div[data-baseweb="menu"],
+    ul[data-baseweb="menu"] {{
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+    }}
+    ul[data-baseweb="menu"] li,
+    ul[data-baseweb="menu"] [role="option"] {{
+        color: #0f172a !important;
+        background: #ffffff !important;
+    }}
+    ul[data-baseweb="menu"] li:hover,
+    ul[data-baseweb="menu"] [role="option"]:hover,
+    ul[data-baseweb="menu"] [aria-selected="true"] {{
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+    }}
+
+    /* File Uploader & Dropzone Area */
     div[data-testid="stFileUploader"] {{
-        background: {BG_1};
-        border: 1px dashed {BORDER_STRONG};
-        border-radius: 8px;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
+        background: #ffffff !important;
+        border: 1px dashed #cbd5e1 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
     }}
     div[data-testid="stFileUploader"] section {{
         padding: 0.4rem 0 !important;
+        background: #f8fafc !important;
+        border-radius: 6px !important;
     }}
-
-    /* Expander */
-    div[data-testid="stExpander"] {{
-        background: {BG_1} !important;
-        border: 1px solid {BORDER} !important;
-        border-radius: 8px !important;
-        margin: 0.5rem 0 !important;
-        box-shadow: none !important;
+    div[data-testid="stFileUploaderDropzone"] {{
+        background: #f8fafc !important;
+        border: 1px dashed #cbd5e1 !important;
+        border-radius: 6px !important;
     }}
-    div[data-testid="stExpander"] summary {{
-        font-size: 0.82rem !important;
-        padding: 0.4rem 0.6rem !important;
-        font-weight: 600 !important;
-    }}
-
-    /* Primary and Secondary Buttons */
-    .stButton {{
-        margin-top: 0.3rem !important;
-        margin-bottom: 0.3rem !important;
-    }}
-    .stButton > button[kind="primary"] {{
-        background: {TEXT} !important;
-        color: #ffffff !important;
-        font-weight: 600 !important;
-        font-size: 0.88rem !important;
-        border: 1px solid {TEXT} !important;
-        border-radius: 8px !important;
-        padding: 0.45rem 1rem !important;
-        min-height: 2.35rem !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important;
-        transition: all 0.15s ease !important;
-    }}
-    .stButton > button[kind="primary"]:hover {{
-        background: #1e293b !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.1) !important;
-    }}
-
-    .stButton > button:not([kind="primary"]) {{
-        background: {BG_1} !important;
-        color: {TEXT} !important;
-        border: 1px solid {BORDER} !important;
-        border-radius: 7px !important;
-        font-size: 0.8rem !important;
+    div[data-testid="stFileUploaderDropzone"] [data-testid="stMarkdownContainer"] p,
+    div[data-testid="stFileUploaderDropzone"] span,
+    div[data-testid="stFileUploaderDropzone"] small {{
+        color: #334155 !important;
+        -webkit-text-fill-color: #334155 !important;
         font-weight: 500 !important;
-        min-height: 2.1rem !important;
-        padding: 0.3rem 0.65rem !important;
-        transition: all 0.15s ease !important;
     }}
-    .stButton > button:not([kind="primary"]):hover {{
-        background: {BG_2} !important;
-        border-color: {TEXT_DIM} !important;
+    div[data-testid="stFileUploaderDropzone"] button {{
+        background: #ffffff !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
     }}
+    div[data-testid="stFileUploaderDropzone"] button:hover {{
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+    }}
+    div[data-testid="stFileUploaderDropzone"] button * {{
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }}
+
 
     /* Chips */
     .chip-row {{
