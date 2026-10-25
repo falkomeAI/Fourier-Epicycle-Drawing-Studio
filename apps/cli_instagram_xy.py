@@ -90,7 +90,7 @@ def render_instagram_xy_video(
     """Generate Instagram-optimized X/Y Fourier animation."""
     
     # Normalize and fit both X and Y series
-    pts = normalize_path(points, target_span=2.0)
+    pts = normalize_path(points, target_span=3.7)
     fx = fit_fourier(pts[:, 0], n_harmonics)
     fy = fit_fourier(pts[:, 1], n_harmonics)
     
@@ -267,7 +267,7 @@ def render_instagram_xy_video(
                 if i < n and i < len(radii_y):
                     y_circles[i].set_visible(True)
                     y_circles[i].center = (yc[i].real, yc[i].imag)
-                    y_circles[i].set_radius(max(float(radii_y[i]), 1e-6))
+                    y_circles[i].set_radius(max(float(radii_y[i]) * 0.55, 1e-6))
                     y_circles[i].set_alpha(max(0.3, min(0.8, float(radii_y[i]) * 1.5)))
                 else:
                     y_circles[i].set_visible(False)

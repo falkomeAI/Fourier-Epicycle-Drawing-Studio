@@ -358,37 +358,91 @@ st.markdown(f"""
         line-height: 1.35;
     }}
 
-    /* Workspace Preview & Video - Crisp Portrait Display */
-    div[data-testid="stImage"] img,
+    /* Button styling - high-contrast clean design */
+    button[data-testid="baseButton-primary"],
+    button[kind="primary"] {{
+        background: #0f172a !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        border: 1px solid #0f172a !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+    }}
+    button[data-testid="baseButton-primary"]:hover,
+    button[kind="primary"]:hover {{
+        background: #1e293b !important;
+        border-color: #1e293b !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }}
+    button[data-testid="baseButton-primary"] *,
+    button[kind="primary"] * {{
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }}
+
+    div[data-testid="stButton"] button[kind="secondary"],
+    button[kind="secondary"] {{
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+    }}
+    div[data-testid="stButton"] button[kind="secondary"]:hover,
+    button[kind="secondary"]:hover {{
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }}
+    div[data-testid="stButton"] button[kind="secondary"] * {{
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }}
+
+    /* Workspace Preview & Video - Crisp Portrait Display balanced with left panel */
     div[data-testid="stImage"] {{
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }}
+    div[data-testid="stImage"] img,
+    div[data-testid="stPyplot"] img,
+    div[data-testid="stPlot"] img,
+    div[data-testid="element-container"] img {{
         max-height: 520px !important;
+        width: auto !important;
+        max-width: 100% !important;
         object-fit: contain !important;
+        display: block !important;
         margin: 0 auto !important;
+        border-radius: 12px !important;
     }}
     div[data-testid="stPlotlyChart"],
     div.element-container:has(> iframe),
     div[data-testid="element-container"]:has(img) {{
-        max-height: 540px !important;
-    }}
-    div[data-testid="element-container"] img {{
-        max-height: 520px !important;
-        object-fit: contain !important;
-        display: block;
-        margin: 0 auto;
+        max-height: none !important;
     }}
 
     /* Video player container - sleek dark backdrop for orthogonal view */
     div[data-testid="stVideo"] {{
         border: 1px solid #1e293b;
-        border-radius: 8px;
+        border-radius: 12px;
         padding: 0.35rem;
         background: #0b0f14;
         display: flex;
         justify-content: center;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        max-height: 540px !important;
     }}
     video {{
-        border-radius: 6px;
+        border-radius: 10px;
         max-height: 520px !important;
+        width: auto !important;
+        max-width: 100% !important;
         object-fit: contain;
         margin: 0 auto;
     }}
@@ -409,6 +463,72 @@ st.markdown(f"""
     }}
     div[data-testid="stVerticalBlock"] {{
         gap: 0.65rem !important;
+    }}
+
+    /* ── Mobile Phone Screen Optimization (< 768px & < 480px) ── */
+    @media (max-width: 768px) {{
+        .block-container {{
+            padding: 0.5rem 0.5rem 2rem 0.5rem !important;
+            max-width: 100% !important;
+        }}
+        .top-navbar {{
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.35rem !important;
+            padding: 0.25rem 0 0.5rem 0 !important;
+        }}
+        .top-navbar > div:last-child {{
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 0.3rem !important;
+            width: 100% !important;
+        }}
+        .nav-brand-title {{
+            font-size: 0.95rem !important;
+        }}
+        div[data-testid="stHorizontalBlock"] {{
+            gap: 0.75rem !important;
+        }}
+        /* Mobile video & preview auto-scaling */
+        div[data-testid="stVideo"] {{
+            padding: 0.2rem !important;
+            width: 100% !important;
+        }}
+        video {{
+            max-height: 80vh !important;
+            width: 100% !important;
+            object-fit: contain !important;
+            border-radius: 10px !important;
+        }}
+        div[data-testid="stImage"] img,
+        div[data-testid="element-container"] img {{
+            max-height: 80vh !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            object-fit: contain !important;
+            border-radius: 10px !important;
+        }}
+        /* Touch-friendly buttons and inputs for mobile phones */
+        button[data-testid="baseButton-primary"],
+        button[kind="primary"],
+        button[kind="secondary"],
+        div[data-testid="stDownloadButton"] button {{
+            min-height: 48px !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+        }}
+        .chip-row {{
+            gap: 0.25rem !important;
+        }}
+        .chip {{
+            font-size: 0.68rem !important;
+            padding: 0.15rem 0.4rem !important;
+        }}
+        /* Mobile tab styling */
+        button[data-baseweb="tab"] {{
+            font-size: 0.75rem !important;
+            padding: 0.4rem 0.5rem !important;
+        }}
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -694,7 +814,7 @@ def get_pen_at(terms: list[dict], t: float, n: int) -> tuple[float, float]:
 
 def plot_epicycle_preview(points: np.ndarray, n: int = 50) -> tuple[plt.Figure, float]:
     """Generate the static epicycle preview in dual X/Y projection style."""
-    pts = normalize_path(points, target_span=2.0)
+    pts = normalize_path(points, target_span=3.7)
     effective_n = min(int(n), len(pts))
     if effective_n < 1:
         effective_n = 1
@@ -795,8 +915,8 @@ def plot_epicycle_preview(points: np.ndarray, n: int = 50) -> tuple[plt.Figure, 
     # Draw Y circles and arm line (left, gold)
     for i in range(max_vis):
         if ry[i] > 0.01:
-            ax.add_patch(Circle((yc[i].real, yc[i].imag), ry[i], fill=False, ec=Y_CHAIN_COLOR, lw=0.9, alpha=0.55))
-    ax.plot(yc[:max_vis + 1].real, yc[:max_vis + 1].imag, color=Y_CHAIN_COLOR, lw=1.2, alpha=0.9)
+            ax.add_patch(Circle((yc[i].real, yc[i].imag), ry[i] * 0.55, fill=False, ec=Y_CHAIN_COLOR, lw=0.9, alpha=0.55))
+    ax.plot(yc[:max_vis + 1].real, yc[:max_vis + 1].imag, color=Y_CHAIN_COLOR, lw=1.0, alpha=0.7)
 
     # Dashed guide lines projecting to pen
     ax.plot([pen_x, pen_x], [xc[-1].imag, pen_y], "--", color=GUIDE_X_COLOR, lw=1.2, alpha=0.7)
@@ -827,7 +947,7 @@ def plot_comparison_endcard(
     n: int = 50,
 ) -> tuple[plt.Figure, float]:
     """Generate the comparison end-card: up side sketch image, down side drawing image."""
-    pts = normalize_path(points, target_span=2.0)
+    pts = normalize_path(points, target_span=3.2)
     effective_n = min(int(n), len(pts))
     if effective_n < 1:
         effective_n = 1
@@ -941,7 +1061,7 @@ def generate_sidebyside_video(
     except Exception:
         ffmpeg_exe = shutil.which("ffmpeg") or "ffmpeg"
 
-    pts = normalize_path(points, target_span=2.0)
+    pts = normalize_path(points, target_span=3.7)
     effective_n = min(int(n_max), len(pts))
     if effective_n < 1:
         raise ValueError("No Fourier arms are available for this path")
@@ -1113,7 +1233,7 @@ def generate_sidebyside_video(
                 if i < n and ry[i] > 0.01:
                     y_circles[i].set_visible(True)
                     y_circles[i].center = (yc[i].real, yc[i].imag)
-                    y_circles[i].set_radius(ry[i])
+                    y_circles[i].set_radius(ry[i] * 0.55)
                 else:
                     y_circles[i].set_visible(False)
 
@@ -1244,7 +1364,7 @@ def generate_sidebyside_video(
 # ──────────────────────────────────────────────────────────────────────────────
 
 def main():
-    col_left, col_right = st.columns([1.0, 1.45], gap="large")
+    col_left, col_right = st.columns([1.0, 1.2], gap="large")
 
     # ── Persistent session state ──────────────────────────────────────────
     if "uploaded_image_bytes" not in st.session_state:
