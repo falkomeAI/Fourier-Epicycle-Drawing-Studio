@@ -122,8 +122,39 @@ def star_path(n_points: int = 512, spikes: int = 5) -> np.ndarray:
     return _resample_closed(pts, n_points)
 
 
+def butterfly_path(n_points: int = 512) -> np.ndarray:
+    """Temple H. Fay's transcendental butterfly curve."""
+    t = np.linspace(0, 12 * np.pi, max(2048, n_points * 2), endpoint=False)
+    r = np.exp(np.cos(t)) - 2 * np.cos(4 * t) + np.sin(t / 12) ** 5
+    x = np.sin(t) * r
+    y = np.cos(t) * r
+    pts = np.column_stack([x, y])
+    return _resample_closed(pts, n_points)
+
+
+def infinity_path(n_points: int = 512, a: float = 2.0) -> np.ndarray:
+    """Lemniscate of Bernoulli (infinity symbol)."""
+    t = np.linspace(0, 2 * np.pi, n_points, endpoint=False)
+    denom = 1 + np.sin(t) ** 2
+    x = a * np.cos(t) / denom
+    y = a * np.sin(t) * np.cos(t) / denom
+    return np.column_stack([x, y])
+
+
+def rose_path(n_points: int = 512, k: int = 4) -> np.ndarray:
+    """Rhodonea rose curve with k petals."""
+    t = np.linspace(0, 2 * np.pi, n_points, endpoint=False)
+    r = np.cos(k * t)
+    x = r * np.cos(t)
+    y = r * np.sin(t)
+    return np.column_stack([x, y])
+
+
 SHAPES = {
     "hummingbird": hummingbird_path,
     "heart": heart_path,
     "star": star_path,
+    "butterfly": butterfly_path,
+    "infinity": infinity_path,
+    "rose": rose_path,
 }

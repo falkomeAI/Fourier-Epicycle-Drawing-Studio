@@ -34,15 +34,15 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib.patches import Circle, Polygon, Rectangle
 
-from fourier_drawing.debug_frames import DebugFrameRecorder
-from fourier_drawing.image_path import (
+from falkourier.debug_frames import DebugFrameRecorder
+from falkourier.image_path import (
     _resample_closed, _mask_grabcut, _mask_otsu, _mask_rembg, _mask_canny,
     extract_boundary_contour_path, path_from_mask_contours,
 )
-from fourier_drawing.schedule import get_n_schedule, normalize_path, sample_points_for_n
-from fourier_drawing.series import fit_fourier, chain_xy
-from fourier_drawing.complex_series import fit_complex_fourier, sorted_harmonics
-from fourier_drawing.shapes import SHAPES
+from falkourier.schedule import get_n_schedule, normalize_path, sample_points_for_n
+from falkourier.series import fit_fourier, chain_xy
+from falkourier.complex_series import fit_complex_fourier, sorted_harmonics
+from falkourier.shapes import SHAPES
 
 # Hard ceiling for harmonics. Higher values (1000+) produce more detail but
 # take longer to render. 4096 provides ultra-high precision.

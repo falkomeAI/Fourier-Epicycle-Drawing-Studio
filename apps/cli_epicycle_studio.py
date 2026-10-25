@@ -30,10 +30,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Circle, Polygon
 
-from fourier_drawing.series import fit_fourier, chain_xy
-from fourier_drawing.image_path import extract_path_from_image
-from fourier_drawing.schedule import get_n_schedule, normalize_path, sample_points_for_n
-from fourier_drawing.shapes import SHAPES
+from falkourier.series import fit_fourier, chain_xy
+from falkourier.image_path import extract_path_from_image
+from falkourier.schedule import get_n_schedule, normalize_path, sample_points_for_n
+from falkourier.shapes import SHAPES
 
 
 # ── Colour theme ─────────────────────────────────────────────────────────────

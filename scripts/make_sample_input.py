@@ -5,8 +5,8 @@ import _bootstrap  # noqa: F401  (adds ../src to sys.path)
 
 from pathlib import Path
 
-from fourier_drawing.image_path import save_silhouette_preview
-from fourier_drawing.shapes import hummingbird_path
+from falkourier.image_path import save_silhouette_preview
+from falkourier.shapes import hummingbird_path
 
 OUT = Path(__file__).resolve().parent.parent / "samples" / "hummingbird.png"
 

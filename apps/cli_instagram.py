@@ -29,10 +29,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Circle
 
-from fourier_drawing.complex_series import fit_complex_fourier, sorted_harmonics
-from fourier_drawing.image_path import extract_path_from_image
-from fourier_drawing.schedule import get_n_schedule, normalize_path, sample_points_for_n
-from fourier_drawing.shapes import SHAPES
+from falkourier.complex_series import fit_complex_fourier, sorted_harmonics
+from falkourier.image_path import extract_path_from_image
+from falkourier.schedule import get_n_schedule, normalize_path, sample_points_for_n
+from falkourier.shapes import SHAPES
 
 
 # Instagram color theme - professional dark

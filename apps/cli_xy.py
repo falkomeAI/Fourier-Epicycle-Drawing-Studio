@@ -24,10 +24,10 @@ from matplotlib import animation
 from matplotlib.patches import Circle
 from PIL import Image
 
-from fourier_drawing.image_path import extract_path_from_image, save_silhouette_preview
-from fourier_drawing.schedule import build_n_timeline, get_n_schedule, normalize_path, sample_points_for_n
-from fourier_drawing.series import chain_xy, fit_fourier
-from fourier_drawing.shapes import SHAPES
+from falkourier.image_path import extract_path_from_image, save_silhouette_preview
+from falkourier.schedule import build_n_timeline, get_n_schedule, normalize_path, sample_points_for_n
+from falkourier.series import chain_xy, fit_fourier
+from falkourier.shapes import SHAPES
 
 
 def build_animation(
@@ -280,7 +280,7 @@ def build_animation(
     # OFFLINE RENDERING: Save frames to temp folder, then combine with ffmpeg
     # ─────────────────────────────────────────────────────────────────────────
     if offline and save_path:
-        from fourier_drawing.offline_render import OfflineRenderer
+        from falkourier.offline_render import OfflineRenderer
         
         print(f"Using offline rendering ({total_frames} frames)...")
         with OfflineRenderer("xy_fourier", auto_cleanup=True) as renderer:
