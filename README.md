@@ -1,5 +1,6 @@
-# 🌀 Fourier Epicycle Drawing Studio
+# 🌀 falkourier — Fourier Epicycle Drawing Studio
 
+[![PyPI](https://img.shields.io/pypi/v/falkourier.svg?color=blue)](https://pypi.org/project/falkourier/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fourier-studio.streamlit.app/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Canvas-2ea44f.svg?logo=github)](https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/)
@@ -13,7 +14,7 @@
 > - **Full Python Web Studio**: **[https://fourier-studio.streamlit.app](https://fourier-studio.streamlit.app/)** *(Complete 4096-harmonic engine, automated video outro & audio loop)*
 > - **Interactive Canvas Demo**: **[https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio](https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/)** *(Client-side in-browser real-time DFT)*
 
-A high-precision **Fourier Series Epicycle Drawing Engine** and **Animation Studio**. Transform photos, sketches, and mathematical curves into continuous closed loops drawn dynamically by rotating epicycle chains with exact real-time projection formulas, harmonic progress counters, and seamless background audio.
+**falkourier** is a high-precision **Fourier Series Epicycle Drawing Engine** and **Animation Studio**. Transform photos, sketches, and mathematical curves into continuous closed loops drawn dynamically by rotating epicycle chains with exact real-time projection formulas, harmonic progress counters, and seamless background audio.
 
 ---
 
@@ -23,14 +24,11 @@ A high-precision **Fourier Series Epicycle Drawing Engine** and **Animation Stud
 - [Visual Showcase & Screenshots](#visual-showcase--screenshots)
 - [Mathematical Foundation](#mathematical-foundation)
 - [Key Features](#key-features)
-- [Project Architecture](#project-architecture)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-  - [1. Launching the Web Studio UI](#1-launching-the-web-studio-ui)
-  - [2. CLI Video Generation](#2-cli-video-generation)
+- [Pip Package & Installation](#pip-package--installation)
+- [Python API Usage](#python-api-usage)
+- [CLI Tools](#cli-tools)
+- [Web Studio UI](#web-studio-ui)
 - [Contour Extraction Pipelines](#contour-extraction-pipelines)
-- [Configuration & CLI Options](#configuration--cli-options)
-- [Audio & Outro Integration](#audio--outro-integration)
 - [Creator & Attribution](#creator--attribution)
 - [License](#license)
 
@@ -152,14 +150,19 @@ Fourier-Epicycle-Drawing-Studio/
 │   ├── cli_complex.py          # Single complex-chain desktop video generator
 │   └── cli_epicycle_studio.py  # Dual-chain vertical portrait animator
 ├── src/
-│   └── fourier_drawing/
-│       ├── series.py           # Real two-axis Fourier series computation
-│       ├── complex_series.py   # Complex exponential Fourier series & harmonic ranking
-│       ├── image_path.py       # High-detail boundary extraction & continuous tour chaining
-│       ├── schedule.py         # Progressive N scheduling & Nyquist sample point scaling
-│       ├── shapes.py           # Built-in mathematical curves (hummingbird, heart, star, etc.)
-│       ├── ai_path.py          # Neural line art extraction & closed tour solver
-│       └── offline_render.py   # Headless video rendering engine via ffmpeg
+│   ├── falkourier/             # Core falkourier pip package module
+│   │   ├── __init__.py         # Public API exports & package metadata
+│   │   ├── cli.py              # CLI entry point (falkourier & falkourier-studio)
+│   │   ├── series.py           # Real two-axis Fourier series computation
+│   │   ├── complex_series.py   # Complex exponential Fourier series & harmonic ranking
+│   │   ├── image_path.py       # High-detail boundary extraction & continuous tour chaining
+│   │   ├── schedule.py         # Progressive N scheduling & Nyquist sample point scaling
+│   │   ├── shapes.py           # Built-in mathematical curves (hummingbird, heart, star, etc.)
+│   │   ├── ai_path.py          # Neural line art extraction & closed tour solver
+│   │   └── offline_render.py   # Headless video rendering engine via ffmpeg
+│   └── fourier_drawing/        # Backwards-compatibility wrapper
+├── pyproject.toml              # Modern PEP 621 package specification
+├── setup.py                    # Build & distribution configuration
 ├── assets/
 │   ├── math_formula_banner.png          # High-resolution mathematical formula banner
 │   ├── preview_epicycle_studio.png      # High-resolution epicycle drawing screenshot
@@ -177,81 +180,93 @@ Fourier-Epicycle-Drawing-Studio/
 
 ---
 
-<a id="installation"></a>
-## 🚀 Installation
+<a id="pip-package--installation"></a>
+## 📦 Pip Package & Installation
 
-### 1. Clone the Repository
+### Option A: Install via PyPI (Recommended)
+```bash
+pip install falkourier
+```
+
+### Option B: Install from GitHub Source
 ```bash
 git clone https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio.git
 cd Fourier-Epicycle-Drawing-Studio
+pip install -e .
 ```
 
-### 2. Set Up Virtual Environment
-```bash
-# Python 3.10+ recommended
-python -m venv .venv
-
-# Activate on Windows:
-.venv\Scripts\activate
-
-# Activate on Linux / macOS:
-source .venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-> **Note**: `ffmpeg` is automatically handled by the pre-configured Python environment (`imageio_ffmpeg`). If running on a minimal Linux server, ensure system `ffmpeg` is installed: `sudo apt install ffmpeg`.
+> **Note**: `ffmpeg` is automatically bundled via `imageio-ffmpeg`. If using a barebones Linux container, install ffmpeg with `sudo apt install ffmpeg`.
 
 ---
 
-<a id="quick-start"></a>
-## 🎮 Quick Start
+<a id="python-api-usage"></a>
+## 🐍 Python API Usage
 
-<a id="1-launching-the-web-studio-ui"></a>
-### 1. Launching the Web Studio UI
+You can use **falkourier** directly inside your Python scripts or Jupyter notebooks:
 
-Start the interactive Streamlit studio:
+```python
+import falkourier as fk
+
+# 1. Access built-in mathematical curves
+path = fk.SHAPES["hummingbird"]()
+
+# 2. Or extract continuous closed contour from any image
+path = fk.extract_boundary_contour_path("assets/sample_portrait.jpg", target_points=4096)
+
+# 3. Fit real dual-axis Fourier series
+fit_result = fk.fit_fourier(path[:, 0], path[:, 1], n_harmonics=500)
+print(f"X Harmonics: {len(fit_result['x_coeffs']['an'])}, Y Harmonics: {len(fit_result['y_coeffs']['cn'])}")
+
+# 4. Fit single-chain complex Fourier series
+complex_result = fk.fit_complex_fourier(path[:, 0], path[:, 1], n_harmonics=500)
+print(f"Computed {len(complex_result['harmonics'])} complex rotating epicycles.")
+```
+
+---
+
+<a id="cli-tools"></a>
+## ⚡ CLI Tools
+
+Once installed via pip, **falkourier** gives you immediate terminal commands:
+
+### 1. Generate Fourier Epicycle Videos (`falkourier`)
+```bash
+# Render from an image with 500 harmonics
+falkourier --image assets/sample_portrait.jpg --n 500 --save output/portrait.mp4
+
+# Render a built-in shape (hummingbird, heart, star, butterfly, etc.)
+falkourier --shape hummingbird --n 300 --save output/hummingbird.mp4
+
+# Render vertical 9:16 Instagram Reels / TikTok format (1080x1920)
+falkourier --shape heart --n 250 --format reels --save output/heart_reel.mp4
+```
+
+### 2. Launch Interactive Studio UI (`falkourier-studio`)
+```bash
+falkourier-studio
+```
+*Launches the Streamlit Studio UI directly in your browser with zero configuration!*
+
+---
+
+<a id="web-studio-ui"></a>
+## 🎮 Web Studio UI
+
+If developing from the repository clone, you can also launch the Web Studio with:
 ```bash
 streamlit run apps/web_app.py
 ```
 Open your browser to `http://localhost:8501`.
 
-#### Web Studio Workflow:
-1. **Choose a Source**: Select `Preset outline`, `Upload image` (PNG, JPG, WEBP), or `Built-in shape`.
-2. **Select Extraction Method**: Choose from high-detail boundary tracing, adaptive thresholding, edge detection, or AI segmentation.
-3. **Choose Quality Level**:
+#### Web Studio Features:
+1. **Source Selection**: Choose `Preset outline`, `Upload image` (PNG, JPG, WEBP), or `Built-in shape`.
+2. **Contour Extraction**: Choose from high-detail boundary tracing, adaptive thresholding, edge detection, or AI segmentation.
+3. **Harmonic Presets**:
    - ⚡ **Quick** ($N = 100$ harmonics) — Instant preview & fast render
    - ✨ **Detailed** ($N = 500$ harmonics) — High fidelity
    - 🎯 **High Detail** ($N = 1024$ harmonics) — Sharp details
    - 🔥 **Ultra** ($N = 4000$ harmonics) — Maximum precision ($> 99.99\%$ fit)
-4. **Generate & Download**: Click **Generate video** to synthesize the MP4 animation with synchronized audio and the end comparison card.
-
----
-
-<a id="2-cli-video-generation"></a>
-### 2. CLI Video Generation
-
-#### Dual-Chain X/Y Instagram Video:
-```bash
-# Generate square video (1080x1080) from an image
-python apps/cli_instagram_xy.py --image assets/sample_portrait.jpg --n 500 --save output/portrait_xy.mp4
-
-# Generate vertical Reel format (1080x1920) with built-in shape
-python apps/cli_instagram_xy.py --shape hummingbird --n 300 --format reels --save output/hummingbird_reel.mp4
-```
-
-#### Side-by-Side Dual-Chain Video:
-```bash
-python apps/cli_xy.py --image assets/sample_portrait.jpg --n 250 --side-by-side --save output/side_by_side.mp4
-```
-
-#### Complex Single-Chain Video:
-```bash
-python apps/cli_complex.py --shape heart --n 200 --save output/heart_complex.mp4
-```
+4. **Export**: Full 60fps MP4 animation with synchronized audio, rotating epicycle projections, and endcard comparison.
 
 ---
 
