@@ -1,13 +1,17 @@
 # 🌀 Fourier Epicycle Drawing Studio
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-FF4B4B.svg)](https://streamlit.io/)
-[![OpenCV](https://img.shields.io/badge/OpenCV-4.8+-green.svg)](https://opencv.org/)
+[![Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fourier-studio.streamlit.app/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Canvas-2ea44f.svg?logo=github)](https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Creator](https://img.shields.io/badge/Creator-@falkomeai-rose.svg)](https://instagram.com/falkomeai)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Fourier--Epicycle--Drawing--Studio-181717.svg?logo=github)](https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio)
 
 ![Fourier Epicycle Studio Hero Banner](./assets/preview_epicycle_studio.png)
+
+> 🚀 **Live Online Deployments**:
+> - **Full Python Web Studio**: **[https://fourier-studio.streamlit.app](https://fourier-studio.streamlit.app/)** *(Complete 4096-harmonic engine, automated video outro & audio loop)*
+> - **Interactive Canvas Demo**: **[https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio](https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/)** *(Client-side in-browser real-time DFT)*
 
 A high-precision **Fourier Series Epicycle Drawing Engine** and **Animation Studio**. Transform photos, sketches, and mathematical curves into continuous closed loops drawn dynamically by rotating epicycle chains with exact real-time projection formulas, harmonic progress counters, and seamless background audio.
 

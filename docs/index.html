@@ -124,6 +124,29 @@
       background: rgba(255, 255, 255, 0.08);
     }
 
+    .btn-live-app {
+      background: linear-gradient(135deg, #ff4b4b, #ff7676);
+      border: 1px solid rgba(255, 75, 75, 0.5);
+      color: #ffffff !important;
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(255, 75, 75, 0.3);
+    }
+
+    .btn-live-app:hover {
+      background: #ff3333;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 75, 75, 0.5);
+      color: #ffffff !important;
+    }
+
     /* Main Grid */
     main {
       flex: 1;
@@ -403,6 +426,9 @@
       <h1>Fourier Epicycle Drawing Studio <span>v2.0</span></h1>
     </div>
     <div class="header-links">
+      <a href="https://fourier-studio.streamlit.app/" target="_blank" class="btn-live-app">
+        <span>⚡</span> Full Streamlit App
+      </a>
       <a href="https://instagram.com/falkomeai" target="_blank" class="badge-creator">
         <span>📸</span> @falkomeai
       </a>
@@ -434,6 +460,17 @@
 
     <!-- Controls Sidebar -->
     <aside class="sidebar">
+      <!-- Live Cloud Studio Callout -->
+      <div class="panel-card" style="background: linear-gradient(135deg, rgba(255, 75, 75, 0.12), rgba(56, 189, 248, 0.08)); border-color: rgba(255, 75, 75, 0.35);">
+        <div class="card-title" style="color: #ff6b6b; margin-bottom: 0.35rem;">⚡ Streamlit Cloud Studio</div>
+        <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4; margin-bottom: 0.65rem;">
+          Run the full Python studio online: 4096-harmonic precision, background music looping, and instant MP4 video downloads.
+        </p>
+        <a href="https://fourier-studio.streamlit.app/" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 0.4rem; background: #ff4b4b; color: #ffffff; text-decoration: none; padding: 0.5rem; border-radius: 6px; font-weight: 700; font-size: 0.82rem; transition: background 0.2s;">
+          🚀 Open Live App ➔
+        </a>
+      </div>
+
       <!-- Shape & Preset Selection -->
       <div class="panel-card">
         <div class="card-title">Shape Source</div>
