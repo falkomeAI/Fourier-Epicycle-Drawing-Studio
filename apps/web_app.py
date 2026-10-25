@@ -658,8 +658,14 @@ def extract_contour_from_bytes(
     img_bytes: bytes, method: str, n_points: int = 512,
     invert: bool = False, min_contour_len: int = 8, max_contours: int = 500,
     ai_confidence: float = 0.25,
-    phycv_clahe: bool = True,
-    phycv_bilateral: bool = True,
+    pst_S: float = 0.35,
+    pst_W: float = 14.0,
+    pst_sigma_LPF: float = 0.15,
+    pst_thresh_min: float = 0.05,
+    pst_thresh_max: float = 0.88,
+    pst_morph_flag: int = 1,
+    phycv_clahe: bool = False,
+    phycv_bilateral: bool = False,
     phycv_close_gaps: bool = True,
     phycv_min_area: int = 15,
     phycv_thin: bool = False,
@@ -735,13 +741,19 @@ def extract_contour_from_bytes(
     elif method in ("phycv", "pst"):
         mask = _mask_phycv_pst(
             bgr,
+            S=pst_S,
+            W=pst_W,
+            sigma_LPF=pst_sigma_LPF,
+            thresh_min=pst_thresh_min,
+            thresh_max=pst_thresh_max,
+            morph_flag=pst_morph_flag,
             clahe=phycv_clahe,
             bilateral=phycv_bilateral,
             close_gaps=phycv_close_gaps,
             min_area=phycv_min_area,
             thin=phycv_thin,
         )
-        detected_label = "PhyCV (Physics Edge + CV Refined)"
+        detected_label = f"PhyCV PST (S={pst_S:.2f}, W={pst_W:.1f}, σ={pst_sigma_LPF:.2f})"
     elif method == "canny":
         mask = _mask_canny(bgr)
     elif method == "adaptive":
@@ -1413,8 +1425,14 @@ def main():
         min_contour_len = 8
         max_contours = 120
         ai_confidence = 0.25
-        phycv_clahe = True
-        phycv_bilateral = True
+        pst_S = 0.35
+        pst_W = 14.0
+        pst_sigma_LPF = 0.15
+        pst_thresh_min = 0.05
+        pst_thresh_max = 0.88
+        pst_morph_flag = 1
+        phycv_clahe = False
+        phycv_bilateral = False
         phycv_close_gaps = True
         phycv_min_area = 15
         phycv_thin = False
@@ -1482,34 +1500,78 @@ def main():
 
                 if method not in ("ai", "ai_anime"):
                     if method in ("phycv", "pst"):
-                        with st.expander("🔬 PhyCV & CV Enhancements", expanded=False):
-                            phycv_clahe = st.checkbox(
-                                "CLAHE local contrast boost",
-                                value=True,
-                                help="Equalizes lighting across shadows & bright areas to capture faint sketch strokes.",
-                            )
-                            phycv_bilateral = st.checkbox(
-                                "Bilateral edge-preserving denoise",
-                                value=True,
-                                help="Smooths flat noise and grain while preserving tack-sharp edge gradients.",
-                            )
-                            phycv_close_gaps = st.checkbox(
-                                "Morphological gap closing",
-                                value=True,
-                                help="Bridges hairline breaks in hand-drawn strokes into continuous closed paths.",
-                            )
-                            phycv_min_area = st.slider(
-                                "Noise speckle filter (min px area)",
-                                min_value=0,
-                                max_value=100,
-                                value=15,
-                                help="Removes isolated dust speckles smaller than this pixel area to prevent Fourier jitter.",
-                            )
-                            phycv_thin = st.checkbox(
-                                "Thin line skeleton (1-pixel strokes)",
-                                value=False,
-                                help="Reduces thick strokes to single-pixel centerlines for clean Fourier line tracing.",
-                            )
+                        with st.expander("⚡ PhyCV Physics Parameters (PST)", expanded=True):
+                            col_p1, col_p2 = st.columns(2)
+                            with col_p1:
+                                pst_S = st.slider(
+                                    "Phase strength (S)",
+                                    min_value=0.05,
+                                    max_value=1.50,
+                                    value=0.35,
+                                    step=0.05,
+                                    help="Amount of phase applied. Higher values capture finer structural lines.",
+                                )
+                            with col_p2:
+                                pst_W = st.slider(
+                                    "Warp parameter (W)",
+                                    min_value=1.0,
+                                    max_value=35.0,
+                                    value=14.0,
+                                    step=1.0,
+                                    help="Scale and width of the dispersive phase kernel warp profile.",
+                                )
+
+                            col_p3, col_p4 = st.columns(2)
+                            with col_p3:
+                                pst_sigma_LPF = st.slider(
+                                    "Low-pass filter cutoff (σ)",
+                                    min_value=0.02,
+                                    max_value=0.60,
+                                    value=0.15,
+                                    step=0.01,
+                                    help="Physics low-pass frequency filter. Replaces external blur/denoising by filtering noise directly in the Fourier domain.",
+                                )
+                            with col_p4:
+                                pst_thresh_max = st.slider(
+                                    "Threshold max (T_max)",
+                                    min_value=0.30,
+                                    max_value=0.99,
+                                    value=0.88,
+                                    step=0.01,
+                                    help="Phase derivative threshold. Lower values detect faint/delicate edges.",
+                                )
+
+                            with st.expander("🛠️ Advanced Thresholds & Cleanup", expanded=False):
+                                pst_thresh_min = st.slider(
+                                    "Threshold min (T_min)",
+                                    min_value=0.00,
+                                    max_value=0.30,
+                                    value=0.05,
+                                    step=0.01,
+                                    help="Lower threshold rejecting dark background features.",
+                                )
+                                pst_morph_flag = 1 if st.checkbox(
+                                    "PhyCV internal morph operation",
+                                    value=True,
+                                    help="Applies UCLA PhyCV's internal morphological edge cleaning.",
+                                ) else 0
+                                phycv_close_gaps = st.checkbox(
+                                    "Morphological gap closing",
+                                    value=True,
+                                    help="Bridges hairline breaks in hand-drawn strokes into continuous closed paths.",
+                                )
+                                phycv_min_area = st.slider(
+                                    "Noise speckle filter (min px area)",
+                                    min_value=0,
+                                    max_value=100,
+                                    value=15,
+                                    help="Removes isolated dust speckles smaller than this pixel area to prevent Fourier jitter.",
+                                )
+                                phycv_thin = st.checkbox(
+                                    "Thin line skeleton (1-pixel strokes)",
+                                    value=False,
+                                    help="Reduces thick strokes to single-pixel centerlines for clean Fourier line tracing.",
+                                )
 
                     if method != "ai_lite":
                         invert = st.checkbox("Invert foreground/background", value=False)
@@ -1558,6 +1620,12 @@ def main():
                         img_bytes, method, n_points=preview_n_points, invert=invert,
                         min_contour_len=min_contour_len, max_contours=max_contours,
                         ai_confidence=ai_confidence,
+                        pst_S=pst_S,
+                        pst_W=pst_W,
+                        pst_sigma_LPF=pst_sigma_LPF,
+                        pst_thresh_min=pst_thresh_min,
+                        pst_thresh_max=pst_thresh_max,
+                        pst_morph_flag=pst_morph_flag,
                         phycv_clahe=phycv_clahe,
                         phycv_bilateral=phycv_bilateral,
                         phycv_close_gaps=phycv_close_gaps,

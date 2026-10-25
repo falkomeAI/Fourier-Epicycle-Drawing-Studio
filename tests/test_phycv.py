@@ -44,6 +44,15 @@ class TestPhyCV(unittest.TestCase):
         # Thinning should produce fewer or equal pixels than dilated mask
         self.assertLessEqual(np.count_nonzero(mask_thin), np.count_nonzero(mask_clean))
 
+    def test_phycv_custom_pst_parameters(self):
+        img = np.zeros((100, 100, 3), dtype=np.uint8)
+        cv2.circle(img, (50, 50), 30, (255, 255, 255), 2)
+        mask = _mask_phycv_pst(
+            img, S=0.5, W=18.0, sigma_LPF=0.10, thresh_min=0.03, thresh_max=0.85, morph_flag=1
+        )
+        self.assertEqual(mask.shape, (100, 100))
+        self.assertGreater(np.count_nonzero(mask), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
