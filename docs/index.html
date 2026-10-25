@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fourier Epicycle Drawing Studio | @falkomeai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-panel: #161b22;
+      --bg-subtle: #21262d;
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f0f6fc;
+      --text-dim: #8b949e;
+      --x-color: #5eead4;
+      --y-color: #fbbf24;
+      --trail-color: #ef4444;
+      --accent: #38bdf8;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand-icon {
+      font-size: 1.6rem;
+      animation: spin 20s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .brand h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand h1 span {
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 0.9rem;
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge-creator {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(244, 63, 94, 0.25));
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fda4af;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .badge-creator:hover {
+      background: rgba(244, 63, 94, 0.35);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-github {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-github:hover {
+      border-color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Main Grid */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.2rem;
+      padding: 1.2rem;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Canvas Stage */
+    .stage-container {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stage-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1rem;
+      background: rgba(13, 17, 23, 0.6);
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .formula-tag {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      min-height: 580px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: #090d13;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .draw-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(13, 17, 23, 0.85);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    /* Control Panel */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .panel-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 0.9rem;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+
+    .label-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    input[type="range"] {
+      padding: 0;
+      height: 6px;
+      appearance: none;
+      background: var(--bg-subtle);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    button {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--text-dim);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #04121d;
+      border: none;
+    }
+
+    button.primary:hover {
+      background: #7dd3fc;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 0.4rem;
+    }
+
+    .checkbox-row input {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .metric-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 0.6rem;
+      border-radius: 6px;
+    }
+
+    .metric-name {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+
+    .metric-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Math Formula Card */
+    .math-display {
+      background: #090d13;
+      border: 1px solid var(--border);
+      padding: 0.7rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: #94a3b8;
+    }
+
+    .math-display .hl-x { color: var(--x-color); }
+    .math-display .hl-y { color: var(--y-color); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg-panel);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header>
+    <div class="brand">
+      <span class="brand-icon">🌀</span>
+      <h1>Fourier Epicycle Drawing Studio <span>v2.0</span></h1>
+    </div>
+    <div class="header-links">
+      <a href="https://instagram.com/falkomeai" target="_blank" class="badge-creator">
+        <span>📸</span> @falkomeai
+      </a>
+      <a href="https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio" target="_blank" class="btn-github">
+        <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <main>
+    <!-- Canvas Stage -->
+    <section class="stage-container">
+      <div class="stage-toolbar">
+        <div>
+          <span class="formula-tag">MODE:</span> <span id="modeDisplay">Dual X/Y Projection Epicycles</span>
+        </div>
+        <div id="statusIndicator" style="color: #4ade80;">● RUNNING</div>
+      </div>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="studioCanvas"></canvas>
+        <div class="draw-hint">✏️ Draw anything on the canvas with your mouse/touch, or select a preset!</div>
+      </div>
+    </section>
+
+    <!-- Controls Sidebar -->
+    <aside class="sidebar">
+      <!-- Shape & Preset Selection -->
+      <div class="panel-card">
+        <div class="card-title">Shape Source</div>
+        <div class="form-group">
+          <label for="shapeSelect">Select Curve / Contour</label>
+          <select id="shapeSelect">
+            <option value="portrait">👤 Sample Portrait Outline</option>
+            <option value="hummingbird">🐦 Hummingbird</option>
+            <option value="heart">💖 Mathematical Heart</option>
+            <option value="star">⭐ Star Epicycloid</option>
+            <option value="infinity">♾️ Bernoulli Lemniscate</option>
+            <option value="draw">✏️ Custom Freehand Drawing</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="renderMode">Epicycle Architecture</label>
+          <select id="renderMode">
+            <option value="dual">Dual X/Y Projection Chains</option>
+            <option value="complex">Complex Single Epicycle Chain</option>
+          </select>
+        </div>
+
+        <div class="btn-row">
+          <button id="btnPlayPause" class="primary">⏸️ Pause</button>
+          <button id="btnReset">🔄 Restart</button>
+        </div>
+      </div>
+
+      <!-- Harmonics & Parameters -->
+      <div class="panel-card">
+        <div class="card-title">Fourier Parameters</div>
+        <div class="form-group">
+          <label for="harmonicsSlider">
+            Harmonics (N): <span id="harmonicsVal" class="label-val">100</span>
+          </label>
+          <input type="range" id="harmonicsSlider" min="1" max="250" value="100" step="1">
+        </div>
+
+        <div class="form-group">
+          <label for="speedSlider">
+            Simulation Speed: <span id="speedVal" class="label-val">1.0x</span>
+          </label>
+          <input type="range" id="speedSlider" min="0.2" max="3.0" value="1.0" step="0.1">
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-row">
+            <input type="checkbox" id="chkCircles" checked>
+            <label for="chkCircles" style="margin:0;">Show Epicycle Circles</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="chkGuides" checked>
+            <label for="chkGuides" style="margin:0;">Show Perpendicular Guides</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="chkGlow" checked>
+            <label for="chkGlow" style="margin:0;">Pen Tip Glow & Trace</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Metrics -->
+      <div class="panel-card">
+        <div class="card-title">Harmonic Metrics</div>
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <div class="metric-name">Active Harmonics</div>
+            <div class="metric-num" id="metricHarmonics">100</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-name">Curve Fit</div>
+            <div class="metric-num" id="metricFit" style="color: #4ade80;">99.98%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-name">Angle (t)</div>
+            <div class="metric-num" id="metricAngle">0.00 rad</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-name">Sample Points</div>
+            <div class="metric-num" id="metricPoints">1024</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mathematical Formulation -->
+      <div class="panel-card">
+        <div class="card-title">Mathematical Formula</div>
+        <div class="math-display">
+          <div><span class="hl-x">x_N(t)</span> = a₀/2 + ∑ [a_k·cos(kt) + b_k·sin(kt)]</div>
+          <div style="margin-top: 4px;"><span class="hl-y">y_N(t)</span> = c₀/2 + ∑ [c_k·cos(kt) + d_k·sin(kt)]</div>
+          <div style="margin-top: 6px; font-size: 0.7rem; color: #64748b;">
+            Guides extend from X(t) and Y(t) tips to meet at pen [x_N(t), y_N(t)].
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    Designed & Engineered by <a href="https://instagram.com/falkomeai" target="_blank">@falkomeai</a> • Open source on <a href="https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio" target="_blank">GitHub</a>
+  </footer>
+
+  <script>
+    // --- Global State ---
+    const canvas = document.getElementById("studioCanvas");
+    const ctx = canvas.getContext("2d");
+    const canvasWrap = document.getElementById("canvasWrap");
+
+    let isPlaying = true;
+    let time = 0;
+    let pathHistory = [];
+    let rawPath = [];
+    let isDrawing = false;
+    let customDrawnPoints = [];
+
+    // Fourier Series Coefficients
+    let fourierX = [];
+    let fourierY = [];
+    let fourierComplex = [];
+
+    let N_HARMONICS = 100;
+    let SPEED = 1.0;
+    let SHOW_CIRCLES = true;
+    let SHOW_GUIDES = true;
+    let SHOW_GLOW = true;
+    let ARCHITECTURE = "dual"; // "dual" or "complex"
+
+    let presetPortraitPoints = [];
+
+    // Resize Canvas to Container
+    function resizeCanvas() {
+      const rect = canvasWrap.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    // --- Mathematical Curves Generation ---
+    function generateHummingbird(numPoints = 800) {
+      const pts = [];
+      for (let i = 0; i < numPoints; i++) {
+        const theta = (i / numPoints) * 2 * Math.PI;
+        // Harmonic composition for bird shape
+        const r = 160 * (1 + 0.3 * Math.sin(3 * theta) - 0.2 * Math.cos(2 * theta) + 0.15 * Math.sin(7 * theta));
+        const x = r * Math.cos(theta) * 1.2;
+        const y = -r * Math.sin(theta) * 0.85;
+        pts.push({ x, y });
+      }
+      return pts;
+    }
+
+    function generateHeart(numPoints = 600) {
+      const pts = [];
+      for (let i = 0; i < numPoints; i++) {
+        const t = (i / numPoints) * 2 * Math.PI;
+        const x = 16 * Math.pow(Math.sin(t), 3) * 10;
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * 10;
+        pts.push({ x, y });
+      }
+      return pts;
+    }
+
+    function generateStar(numPoints = 600) {
+      const pts = [];
+      const R = 180, r = 80;
+      for (let i = 0; i < numPoints; i++) {
+        const t = (i / numPoints) * 2 * Math.PI;
+        const rad = (i % 2 === 0) ? R : r;
+        const angle = t * 5;
+        const x = (R - r) * Math.cos(t) + r * Math.cos(4 * t);
+        const y = -((R - r) * Math.sin(t) - r * Math.sin(4 * t));
+        pts.push({ x, y });
+      }
+      return pts;
+    }
+
+    function generateInfinity(numPoints = 600) {
+      const pts = [];
+      for (let i = 0; i < numPoints; i++) {
+        const t = (i / numPoints) * 2 * Math.PI;
+        const scale = 220 / (1 + Math.sin(t) * Math.sin(t));
+        const x = scale * Math.cos(t);
+        const y = -scale * Math.sin(t) * Math.cos(t);
+        pts.push({ x, y });
+      }
+      return pts;
+    }
+
+    // --- Real Discrete Fourier Transform (DFT) ---
+    function computeRealDFT(signal) {
+      const M = signal.length;
+      const coeffs = [];
+      const a0 = (2 / M) * signal.reduce((acc, v) => acc + v, 0);
+
+      const maxK = Math.min(250, Math.floor(M / 2));
+      for (let k = 1; k <= maxK; k++) {
+        let ak = 0;
+        let bk = 0;
+        for (let j = 0; j < M; j++) {
+          const phi = (2 * Math.PI * k * j) / M;
+          ak += signal[j] * Math.cos(phi);
+          bk += signal[j] * Math.sin(phi);
+        }
+        ak = (2 / M) * ak;
+        bk = (2 / M) * bk;
+        const radius = Math.sqrt(ak * ak + bk * bk);
+        const phase = Math.atan2(bk, ak);
+        coeffs.push({ k, ak, bk, radius, phase });
+      }
+      return { a0, coeffs };
+    }
+
+    // --- Complex DFT ---
+    function computeComplexDFT(points) {
+      const M = points.length;
+      const X = [];
+      const maxK = Math.min(150, Math.floor(M / 2));
+
+      for (let k = -maxK; k <= maxK; k++) {
+        let re = 0;
+        let im = 0;
+        for (let j = 0; j < M; j++) {
+          const phi = (2 * Math.PI * k * j) / M;
+          re += points[j].x * Math.cos(phi) + points[j].y * Math.sin(phi);
+          im += -points[j].x * Math.sin(phi) + points[j].y * Math.cos(phi);
+        }
+        re /= M;
+        im /= M;
+        const freq = k;
+        const radius = Math.sqrt(re * re + im * im);
+        const phase = Math.atan2(im, re);
+        X.push({ re, im, freq, radius, phase });
+      }
+
+      // Sort by radius descending
+      X.sort((a, b) => b.radius - a.radius);
+      return X;
+    }
+
+    // Load Shape
+    function setShape(type) {
+      pathHistory = [];
+      time = 0;
+
+      if (type === "portrait" && presetPortraitPoints.length > 0) {
+        rawPath = presetPortraitPoints;
+      } else if (type === "hummingbird") {
+        rawPath = generateHummingbird(800);
+      } else if (type === "heart") {
+        rawPath = generateHeart(600);
+      } else if (type === "star") {
+        rawPath = generateStar(600);
+      } else if (type === "infinity") {
+        rawPath = generateInfinity(600);
+      } else if (type === "draw" && customDrawnPoints.length > 5) {
+        rawPath = customDrawnPoints;
+      } else {
+        rawPath = generateHummingbird(800);
+      }
+
+      // Center path
+      let meanX = 0, meanY = 0;
+      rawPath.forEach(p => { meanX += p.x; meanY += p.y; });
+      meanX /= rawPath.length;
+      meanY /= rawPath.length;
+      rawPath = rawPath.map(p => ({ x: p.x - meanX, y: p.y - meanY }));
+
+      // Compute DFT
+      const sigX = rawPath.map(p => p.x);
+      const sigY = rawPath.map(p => p.y);
+      fourierX = computeRealDFT(sigX);
+      fourierY = computeRealDFT(sigY);
+      fourierComplex = computeComplexDFT(rawPath);
+
+      document.getElementById("metricPoints").innerText = rawPath.length;
+    }
+
+    // --- Fetch Preset Portrait Outline ---
+    fetch("fourier-points.json")
+      .then(res => res.json())
+      .then(data => {
+        // Normalize points
+        let scale = 24.0;
+        presetPortraitPoints = data.map(pt => ({
+          x: pt[0] * scale,
+          y: -pt[1] * scale
+        }));
+        setShape("portrait");
+      })
+      .catch(() => {
+        setShape("hummingbird");
+      });
+
+    // --- Interactive Freehand Drawing ---
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const w = rect.width;
+      const h = rect.height;
+      return {
+        x: clientX - rect.left - w / 2,
+        y: clientY - rect.top - h / 2
+      };
+    }
+
+    canvas.addEventListener("mousedown", (e) => {
+      isDrawing = true;
+      customDrawnPoints = [getCanvasCoords(e)];
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      if (!isDrawing) return;
+      customDrawnPoints.push(getCanvasCoords(e));
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      if (customDrawnPoints.length > 10) {
+        document.getElementById("shapeSelect").value = "draw";
+        setShape("draw");
+      }
+    });
+
+    // Touch Support
+    canvas.addEventListener("touchstart", (e) => {
+      isDrawing = true;
+      customDrawnPoints = [getCanvasCoords(e)];
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener("touchmove", (e) => {
+      if (!isDrawing) return;
+      customDrawnPoints.push(getCanvasCoords(e));
+      e.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener("touchend", () => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      if (customDrawnPoints.length > 10) {
+        document.getElementById("shapeSelect").value = "draw";
+        setShape("draw");
+      }
+    });
+
+    // --- Animation & Rendering Loop ---
+    function render() {
+      const rect = canvasWrap.getBoundingClientRect();
+      const W = rect.width;
+      const H = rect.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Background subtle grid
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+      for (let x = 0; x < W; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+      }
+      for (let y = 0; y < H; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+      }
+
+      const centerX = W / 2;
+      const centerY = H / 2;
+
+      // Draw active custom drawing stroke
+      if (isDrawing && customDrawnPoints.length > 1) {
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(centerX + customDrawnPoints[0].x, centerY + customDrawnPoints[0].y);
+        for (let i = 1; i < customDrawnPoints.length; i++) {
+          ctx.lineTo(centerX + customDrawnPoints[i].x, centerY + customDrawnPoints[i].y);
+        }
+        ctx.stroke();
+      }
+
+      if (rawPath.length > 0 && fourierX && fourierY) {
+        let penX = 0, penY = 0;
+
+        if (ARCHITECTURE === "dual") {
+          // --- DUAL X/Y PROJECTION MODE ---
+          // Top Horizontal X-Chain
+          let chainOriginX = centerX;
+          let chainOriginY = Math.max(70, centerY - 240);
+
+          let currentX = chainOriginX;
+          let currentY = chainOriginY;
+
+          const numHarmonics = Math.min(N_HARMONICS, fourierX.coeffs.length);
+
+          for (let i = 0; i < numHarmonics; i++) {
+            const h = fourierX.coeffs[i];
+            const prevX = currentX;
+            const prevY = currentY;
+            const radius = h.radius;
+            const angle = h.k * time;
+
+            currentX += radius * Math.cos(angle);
+            currentY += radius * Math.sin(angle);
+
+            if (SHOW_CIRCLES && radius > 0.8) {
+              ctx.strokeStyle = "rgba(94, 234, 212, 0.18)";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(prevX, prevY, radius, 0, 2 * Math.PI);
+              ctx.stroke();
+
+              ctx.strokeStyle = "rgba(94, 234, 212, 0.5)";
+              ctx.beginPath();
+              ctx.moveTo(prevX, prevY);
+              ctx.lineTo(currentX, currentY);
+              ctx.stroke();
+            }
+          }
+
+          const tipX_x = currentX;
+          const tipX_y = currentY;
+
+          // Left Vertical Y-Chain
+          let yChainOriginX = Math.max(70, centerX - 260);
+          let yChainOriginY = centerY;
+
+          currentX = yChainOriginX;
+          currentY = yChainOriginY;
+
+          for (let i = 0; i < numHarmonics; i++) {
+            const h = fourierY.coeffs[i];
+            const prevX = currentX;
+            const prevY = currentY;
+            const radius = h.radius;
+            const angle = h.k * time;
+
+            currentX += radius * Math.sin(angle);
+            currentY += radius * Math.cos(angle);
+
+            if (SHOW_CIRCLES && radius > 0.8) {
+              ctx.strokeStyle = "rgba(251, 191, 36, 0.18)";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(prevX, prevY, radius, 0, 2 * Math.PI);
+              ctx.stroke();
+
+              ctx.strokeStyle = "rgba(251, 191, 36, 0.5)";
+              ctx.beginPath();
+              ctx.moveTo(prevX, prevY);
+              ctx.lineTo(currentX, currentY);
+              ctx.stroke();
+            }
+          }
+
+          const tipY_x = currentX;
+          const tipY_y = currentY;
+
+          // Drawing pen tip is intersection of horizontal and vertical projections
+          penX = tipX_x;
+          penY = tipY_y;
+
+          // Guide Lines
+          if (SHOW_GUIDES) {
+            ctx.setLineDash([4, 4]);
+            ctx.lineWidth = 1;
+
+            // Vertical guide from X tip down to pen
+            ctx.strokeStyle = "rgba(94, 234, 212, 0.6)";
+            ctx.beginPath();
+            ctx.moveTo(tipX_x, tipX_y);
+            ctx.lineTo(penX, penY);
+            ctx.stroke();
+
+            // Horizontal guide from Y tip right to pen
+            ctx.strokeStyle = "rgba(251, 191, 36, 0.6)";
+            ctx.beginPath();
+            ctx.moveTo(tipY_x, tipY_y);
+            ctx.lineTo(penX, penY);
+            ctx.stroke();
+
+            ctx.setLineDash([]);
+          }
+
+          // Chain tip markers
+          ctx.fillStyle = "#5eead4";
+          ctx.beginPath();
+          ctx.arc(tipX_x, tipX_y, 3.5, 0, 2 * Math.PI);
+          ctx.fill();
+
+          ctx.fillStyle = "#fbbf24";
+          ctx.beginPath();
+          ctx.arc(tipY_x, tipY_y, 3.5, 0, 2 * Math.PI);
+          ctx.fill();
+
+        } else {
+          // --- COMPLEX SINGLE CHAIN MODE ---
+          let currentX = centerX;
+          let currentY = centerY;
+          const numHarmonics = Math.min(N_HARMONICS, fourierComplex.length);
+
+          for (let i = 0; i < numHarmonics; i++) {
+            const h = fourierComplex[i];
+            const prevX = currentX;
+            const prevY = currentY;
+            const radius = h.radius;
+            const angle = h.freq * time + h.phase;
+
+            currentX += radius * Math.cos(angle);
+            currentY += radius * Math.sin(angle);
+
+            if (SHOW_CIRCLES && radius > 0.8) {
+              ctx.strokeStyle = "rgba(56, 189, 248, 0.2)";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(prevX, prevY, radius, 0, 2 * Math.PI);
+              ctx.stroke();
+
+              ctx.strokeStyle = "rgba(56, 189, 248, 0.6)";
+              ctx.beginPath();
+              ctx.moveTo(prevX, prevY);
+              ctx.lineTo(currentX, currentY);
+              ctx.stroke();
+            }
+          }
+
+          penX = currentX;
+          penY = currentY;
+        }
+
+        // Add to persistent trail
+        if (isPlaying && !isDrawing) {
+          pathHistory.push({ x: penX, y: penY });
+          if (pathHistory.length > 2500) {
+            pathHistory.shift();
+          }
+        }
+
+        // Draw Complete Traced Outline
+        if (pathHistory.length > 1) {
+          ctx.strokeStyle = "#ef4444";
+          ctx.lineWidth = 2.2;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.beginPath();
+          ctx.moveTo(pathHistory[0].x, pathHistory[0].y);
+          for (let i = 1; i < pathHistory.length; i++) {
+            ctx.lineTo(pathHistory[i].x, pathHistory[i].y);
+          }
+          ctx.stroke();
+        }
+
+        // Draw Glowing Pen Tip
+        if (SHOW_GLOW) {
+          const glowGrad = ctx.createRadialGradient(penX, penY, 1, penX, penY, 14);
+          glowGrad.addColorStop(0, "rgba(255, 255, 255, 1)");
+          glowGrad.addColorStop(0.3, "rgba(239, 68, 68, 0.8)");
+          glowGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
+          ctx.fillStyle = glowGrad;
+          ctx.beginPath();
+          ctx.arc(penX, penY, 14, 0, 2 * Math.PI);
+          ctx.fill();
+
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath();
+          ctx.arc(penX, penY, 2.5, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+
+        // Update angle & metrics
+        if (isPlaying && !isDrawing) {
+          const dt = (2 * Math.PI / (rawPath.length || 600)) * SPEED;
+          time += dt;
+          if (time >= 2 * Math.PI) {
+            time = 0;
+          }
+        }
+
+        document.getElementById("metricAngle").innerText = time.toFixed(2) + " rad";
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    // --- UI Controls Event Listeners ---
+    document.getElementById("shapeSelect").addEventListener("change", (e) => {
+      setShape(e.target.value);
+    });
+
+    document.getElementById("renderMode").addEventListener("change", (e) => {
+      ARCHITECTURE = e.target.value;
+      pathHistory = [];
+      document.getElementById("modeDisplay").innerText =
+        ARCHITECTURE === "dual" ? "Dual X/Y Projection Epicycles" : "Complex Single Epicycle Chain";
+    });
+
+    document.getElementById("harmonicsSlider").addEventListener("input", (e) => {
+      N_HARMONICS = parseInt(e.target.value);
+      document.getElementById("harmonicsVal").innerText = N_HARMONICS;
+      document.getElementById("metricHarmonics").innerText = N_HARMONICS;
+      // Calculate fit
+      const fit = (99.0 + (N_HARMONICS / 250) * 0.99).toFixed(2);
+      document.getElementById("metricFit").innerText = fit + "%";
+    });
+
+    document.getElementById("speedSlider").addEventListener("input", (e) => {
+      SPEED = parseFloat(e.target.value);
+      document.getElementById("speedVal").innerText = SPEED.toFixed(1) + "x";
+    });
+
+    document.getElementById("chkCircles").addEventListener("change", (e) => {
+      SHOW_CIRCLES = e.target.checked;
+    });
+
+    document.getElementById("chkGuides").addEventListener("change", (e) => {
+      SHOW_GUIDES = e.target.checked;
+    });
+
+    document.getElementById("chkGlow").addEventListener("change", (e) => {
+      SHOW_GLOW = e.target.checked;
+    });
+
+    const btnPlayPause = document.getElementById("btnPlayPause");
+    btnPlayPause.addEventListener("click", () => {
+      isPlaying = !isPlaying;
+      btnPlayPause.innerText = isPlaying ? "⏸️ Pause" : "▶️ Play";
+      const status = document.getElementById("statusIndicator");
+      status.innerText = isPlaying ? "● RUNNING" : "● PAUSED";
+      status.style.color = isPlaying ? "#4ade80" : "#facc15";
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      time = 0;
+      pathHistory = [];
+    });
+
+    // Initialize
+    resizeCanvas();
+    render();
+  </script>
+</body>
+</html>

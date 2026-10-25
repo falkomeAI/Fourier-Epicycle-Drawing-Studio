@@ -1,0 +1,16 @@
+# Core Numerical & Mathematical Engine
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+Pillow>=9.0
+opencv-python-headless>=4.8
+
+# Web Application & Video Pipeline
+streamlit>=1.28
+imageio-ffmpeg>=0.4.8
+
+# Optional: Neural Line Art & Background Segmentation
+# rembg>=2.0
+# controlnet-aux>=0.0.9
+# ultralytics>=8.3.0
+# svgpathtools>=1.6
