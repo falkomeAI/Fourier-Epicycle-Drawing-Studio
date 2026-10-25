@@ -2,17 +2,17 @@
 
 [![PyPI](https://img.shields.io/pypi/v/falkourier.svg)](https://pypi.org/project/falkourier/)
 [![Python](https://img.shields.io/pypi/pyversions/falkourier.svg)](https://pypi.org/project/falkourier/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/falkomeAI/falkourier/blob/main/LICENSE)
 [![Creator](https://img.shields.io/badge/creator-@falkomeai-purple.svg)](https://instagram.com/falkomeai)
 
-![falkourier Preview](https://raw.githubusercontent.com/falkomeAI/Fourier-Epicycle-Drawing-Studio/main/assets/preview_epicycle_studio.png)
+![falkourier Preview](https://raw.githubusercontent.com/falkomeAI/falkourier/main/assets/preview_epicycle_studio.png)
 
 `falkourier` is a Python library that draws images, sketches, and curves using Fourier series epicycles (rotating circles). It converts any 2D outline into mathematical harmonic frequencies and animates the drawing process.
 
 Created by [@falkomeai](https://instagram.com/falkomeai).
 
-- **Live Web Studio**: [https://fourier-studio.streamlit.app](https://fourier-studio.streamlit.app/)
-- **GitHub Repository**: [falkomeAI/Fourier-Epicycle-Drawing-Studio](https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio)
+- **Live Web Studio**: [https://falkourier.streamlit.app/](https://falkourier.streamlit.app/)
+- **GitHub Repository**: [falkomeAI/falkourier](https://github.com/falkomeAI/falkourier)
 
 ---
 
@@ -83,4 +83,4 @@ curve = fk.SHAPES["butterfly"]()
 ## Author & License
 
 - Built by **[@falkomeai](https://instagram.com/falkomeai)**
-- Distributed under the [MIT License](https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio/blob/main/LICENSE)
+- Distributed under the [MIT License](https://github.com/falkomeAI/falkourier/blob/main/LICENSE)

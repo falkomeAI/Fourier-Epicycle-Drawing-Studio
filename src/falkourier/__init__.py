@@ -6,7 +6,7 @@ Created by @falkomeai
 
 from __future__ import annotations
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __author__ = "falkomeai"
 
 from .series import fit_fourier, chain_xy

@@ -2,8 +2,8 @@
 
 [![PyPI](https://img.shields.io/pypi/v/falkourier.svg?color=blue)](https://pypi.org/project/falkourier/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fourier-studio.streamlit.app/)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Canvas-2ea44f.svg?logo=github)](https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/)
+[![Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://falkourier.streamlit.app/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Canvas-2ea44f.svg?logo=github)](https://falkomeAI.github.io/falkourier/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Creator](https://img.shields.io/badge/Creator-@falkomeai-rose.svg)](https://instagram.com/falkomeai)
 
@@ -19,8 +19,8 @@ Created by [@falkomeai](https://instagram.com/falkomeai).
 
 ## Live Deployments
 
-- **Web Studio**: [https://fourier-studio.streamlit.app](https://fourier-studio.streamlit.app/) *(Full studio with live epicycle simulation, audio looping, and video export)*
-- **Interactive Canvas**: [https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio](https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/) *(Real-time in-browser discrete Fourier transform)*
+- **Web Studio**: [https://falkourier.streamlit.app/](https://falkourier.streamlit.app/) *(Full studio with live epicycle simulation, audio looping, and video export)*
+- **Interactive Canvas**: [https://falkomeAI.github.io/falkourier/](https://falkomeAI.github.io/falkourier/) *(Real-time in-browser discrete Fourier transform)*
 - **PyPI Package**: [https://pypi.org/project/falkourier/](https://pypi.org/project/falkourier/)
 
 ---
@@ -34,8 +34,8 @@ pip install falkourier
 
 ### From Source (for Development)
 ```bash
-git clone https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio.git
-cd Fourier-Epicycle-Drawing-Studio
+git clone https://github.com/falkomeAI/falkourier.git
+cd falkourier
 pip install -e .
 ```
 
@@ -148,7 +148,7 @@ curve = fk.SHAPES["butterfly"](n_points=1024)
 ## Project Structure
 
 ```
-Fourier-Epicycle-Drawing-Studio/
+falkourier/
 ├── apps/
 │   ├── web_app.py              # Streamlit Web Studio UI
 │   ├── cli_instagram_xy.py     # Core video rendering engine

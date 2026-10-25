@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "falkourier"
-version = "1.0.2"
+version = "1.0.3"
 description = "Draw images and math curves using Fourier series epicycles"
 readme = "README_PYPI.md"
 requires-python = ">=3.9"
@@ -65,11 +65,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio"
-Documentation = "https://falkomeAI.github.io/Fourier-Epicycle-Drawing-Studio/"
-"Live Demo" = "https://fourier-studio.streamlit.app/"
-Repository = "https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio.git"
-"Bug Tracker" = "https://github.com/falkomeAI/Fourier-Epicycle-Drawing-Studio/issues"
+Homepage = "https://github.com/falkomeAI/falkourier"
+Documentation = "https://falkomeAI.github.io/falkourier/"
+"Live Demo" = "https://falkourier.streamlit.app/"
+Repository = "https://github.com/falkomeAI/falkourier.git"
+"Bug Tracker" = "https://github.com/falkomeAI/falkourier/issues"
 Creator = "https://instagram.com/falkomeai"
 
 [project.scripts]
