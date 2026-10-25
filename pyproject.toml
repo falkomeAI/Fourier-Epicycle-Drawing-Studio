@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "falkourier"
-version = "1.0.0"
+version = "1.0.1"
 description = "High-precision Fourier Series Epicycle Drawing Engine & Studio by @falkomeai"
-readme = "README.md"
+readme = "README_PYPI.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
 authors = [
