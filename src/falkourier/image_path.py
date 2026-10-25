@@ -352,6 +352,53 @@ def _mask_canny(bgr: np.ndarray, low: int = 50, high: int = 150) -> np.ndarray:
     return edges
 
 
+def _mask_phycv_pst(
+    bgr: np.ndarray,
+    S: float = 0.3,
+    W: float = 15.0,
+    sigma_LPF: float = 0.15,
+    thresh_min: float = 0.05,
+    thresh_max: float = 0.9,
+    morph_flag: int = 1,
+) -> np.ndarray:
+    """Physics-inspired edge detection via Phase Stretch Transform (PhyCV, UCLA Jalali Lab).
+
+    Emulates propagation of light through engineered dispersive media followed by
+    coherent detection (https://github.com/JalaliLabUCLA/phycv).
+    Captures delicate textures, fine lines, and faint boundaries in drawings and photos.
+    """
+    try:
+        from phycv import PST
+    except ImportError as exc:
+        raise ImportError(
+            "PhyCV is not installed. Install it with: pip install phycv"
+        ) from exc
+
+    if bgr.ndim == 3:
+        gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = bgr.copy()
+
+    pst = PST()
+    pst.load_img(img_array=gray)
+    pst.init_kernel(S=S, W=W)
+    pst.apply_kernel(
+        sigma_LPF=sigma_LPF,
+        thresh_min=thresh_min,
+        thresh_max=thresh_max,
+        morph_flag=morph_flag,
+    )
+    edge_mask = (pst.pst_output > 0).astype(np.uint8) * 255
+    if np.count_nonzero(edge_mask) == 0 and hasattr(pst, "pst_feature"):
+        # Fallback for dark backgrounds where morph() zeroes out pixels below (max_val / 20)
+        feat = pst.pst_feature
+        q_max = float(np.quantile(feat[::max(1, feat.shape[0] // 100), ::max(1, feat.shape[1] // 100)], thresh_max))
+        edge_mask = (feat > q_max).astype(np.uint8) * 255
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    edge_mask = cv2.dilate(edge_mask, kernel, iterations=1)
+    return edge_mask
+
+
 def _skeletonize_opencv(binary: np.ndarray) -> np.ndarray:
     """
     Zhang-Suen thinning using OpenCV morphological operations.
@@ -727,7 +774,9 @@ def extract_all_contours_path(
         bgr = img
     
     # Get edges
-    if method == "canny":
+    if method in ("phycv", "pst"):
+        mask = _mask_phycv_pst(bgr)
+    elif method == "canny":
         mask = _mask_canny(bgr)
     else:
         # Try alpha channel first, fall back to Otsu
@@ -928,6 +977,9 @@ def extract_path_from_image(
     elif method == "rembg":
         mask = _mask_rembg(bgr)
         method_used = "rembg"
+    elif method in ("phycv", "pst"):
+        mask = _mask_phycv_pst(bgr)
+        method_used = "phycv"
     elif method == "canny":
         mask = _mask_canny(bgr)
         method_used = "canny"

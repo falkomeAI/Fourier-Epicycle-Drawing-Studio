@@ -57,6 +57,10 @@ dependencies = [
 ai = [
     "rembg>=2.0",
     "ultralytics>=8.3.0",
+    "phycv>=1.2.6",
+]
+physics = [
+    "phycv>=1.2.6",
 ]
 dev = [
     "build",

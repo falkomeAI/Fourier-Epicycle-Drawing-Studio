@@ -37,7 +37,7 @@ from matplotlib.patches import Circle, Polygon, Rectangle
 from falkourier.debug_frames import DebugFrameRecorder
 from falkourier.image_path import (
     _resample_closed, _mask_grabcut, _mask_otsu, _mask_rembg, _mask_canny,
-    extract_boundary_contour_path, path_from_mask_contours,
+    _mask_phycv_pst, extract_boundary_contour_path, path_from_mask_contours,
 )
 from falkourier.schedule import get_n_schedule, normalize_path, sample_points_for_n
 from falkourier.series import fit_fourier, chain_xy
@@ -727,6 +727,9 @@ def extract_contour_from_bytes(
             mask = _mask_rembg(bgr)
         except Exception:
             mask = _mask_otsu(bgr, invert=True)
+    elif method in ("phycv", "pst"):
+        mask = _mask_phycv_pst(bgr)
+        detected_label = "PhyCV (Phase Stretch Transform)"
     elif method == "canny":
         mask = _mask_canny(bgr)
     elif method == "adaptive":
@@ -1429,12 +1432,13 @@ def main():
                             st.rerun()
 
                 method_options = [
-                    "boundary", "adaptive", "canny", "otsu", "grabcut", "alpha"
+                    "boundary", "phycv", "canny", "adaptive", "otsu", "grabcut", "alpha"
                 ]
                 method_labels = {
                     "boundary": "⚫ High-Detail Boundary Contours",
+                    "phycv": "⚡ PhyCV Physics Edge Detection (PST)",
+                    "canny": "🔍 Canny Edge Detection (Classic)",
                     "adaptive": "✏️ Adaptive Threshold (Line Art)",
-                    "canny": "🔍 Edge Detection (Fine Detail)",
                     "otsu": "🌓 Binary Threshold (High Contrast)",
                     "grabcut": "📸 Foreground Subject Isolation",
                     "alpha": "🔲 PNG Alpha Channel",

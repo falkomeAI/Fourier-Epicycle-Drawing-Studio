@@ -9,8 +9,9 @@ opencv-python-headless>=4.8
 streamlit>=1.28
 imageio-ffmpeg>=0.4.8
 
-# Optional: Neural Line Art & Background Segmentation
+# Optional: Neural & Physics-Inspired Edge Extraction
 # rembg>=2.0
 # controlnet-aux>=0.0.9
 # ultralytics>=8.3.0
 # svgpathtools>=1.6
+phycv>=1.2.6
